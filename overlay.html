@@ -142,16 +142,16 @@
 		var dx2 = x3 - x1;
 		var dy2 = y3 - y1;
 	
-		var scale = Math.sqrt(
+		var sc = Math.sqrt(
 			((d3 * d3) / (d4 * d4) * (dy2 * dy2) - (dy1 * dy1)) /
 			((dx1 * dx1) - ((d3 * d3) / (d4 * d4)) * (dx2 * dx2))
 		);
 	
-		console.log("scale to " + scale);
+		console.log("scale to " + sc);
 	
-		x1 = x1 * scale;
-		x2 = x2 * scale;
-		wid = wid * scale;
+		x1 = x1 * sc;
+		x2 = x2 * sc;
+		wid = wid * sc;
 	}
 
 	var pixelang = Math.atan2(y2 - y1, x2 - x1);
@@ -233,6 +233,28 @@
         	-width/2, -height/2,
 		worldPoint2.x - worldPoint.x, worldPoint2.y - worldPoint.y);
 	context.restore();
+
+	var wp1 = mapProjection.fromLatLngToPoint(r1);
+	var wp2 = mapProjection.fromLatLngToPoint(r2);
+	var wp3 = mapProjection.fromLatLngToPoint(r3);
+
+	context.lineWidth = 3 / scale;
+	context.strokeStyle = "#000";
+
+	context.beginPath();
+	context.arc(wp1.x, wp1.y, 10 / scale, 0, Math.PI * 2, false);
+	context.closePath();
+	context.stroke();
+
+	context.beginPath();
+	context.arc(wp2.x, wp2.y, 10 / scale, 0, Math.PI * 2, false);
+	context.closePath();
+	context.stroke();
+
+	context.beginPath();
+	context.arc(wp3.x, wp3.y, 10 / scale, 0, Math.PI * 2, false);
+	context.closePath();
+	context.stroke();
       }
 
       document.addEventListener('DOMContentLoaded', init, false);
