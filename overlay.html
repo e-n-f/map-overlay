@@ -19,25 +19,15 @@
       var canvasLayer;
       var context;
 
-      var rectLatLng = new google.maps.LatLng(40, -95);
-      var rectWidth = 6.5;
+      var rectLatLng = new google.maps.LatLng(37.7080, -122.5287);
+      var rectLatLng2 = new google.maps.LatLng(37.8249, -122.3494);
 
       function init() {
         // initialize the map
         var mapOptions = {
-          zoom: 4,
-          center: new google.maps.LatLng(39.3, -95.8),
+          zoom: 9,
+          center: new google.maps.LatLng(37.75, -122.45),
           mapTypeId: google.maps.MapTypeId.ROADMAP,
-          styles: [
-            {
-              featureType: 'water',
-              stylers: [{ color: '#c3cfdd'}]
-            },
-            {
-              featureType: 'poi',
-              stylers: [{visibility: 'off'}]
-            }
-          ]
         };
         var mapDiv = document.getElementById('map-div');
         map = new google.maps.Map(mapDiv, mapOptions);
@@ -64,7 +54,7 @@
         context.clearRect(0, 0, canvasWidth, canvasHeight);
 
         // we like our rectangles green
-        context.fillStyle = 'rgba(0, 255, 0, 1)';
+        context.fillStyle = 'rgba(0, 255, 0, .5)';
         
         /* We need to scale and translate the map for current view.
          * see https://developers.google.com/maps/documentation/javascript/maptypes#MapCoordinates
@@ -91,7 +81,21 @@
 
         // project rectLatLng to world coordinates and draw
         var worldPoint = mapProjection.fromLatLngToPoint(rectLatLng);
-        context.fillRect(worldPoint.x, worldPoint.y, rectWidth, rectWidth);
+        var worldPoint2 = mapProjection.fromLatLngToPoint(rectLatLng2);
+
+	var width = worldPoint2.x - worldPoint.x;
+	var height = worldPoint2.y - worldPoint.y;
+
+	context.save();
+	context.globalAlpha = .5;
+	context.translate(worldPoint.x, worldPoint.y);
+	// context.rotate(Math.PI / 5);
+	context.drawImage(document.getElementById("map-img"),
+        	0, 0,
+		worldPoint2.x - worldPoint.x, worldPoint2.y - worldPoint.y);
+	context.restore();
+        //context.fillRect(worldPoint.x, worldPoint.y,
+	//	worldPoint2.x - worldPoint.x, worldPoint2.y - worldPoint.y);
       }
 
       document.addEventListener('DOMContentLoaded', init, false);
@@ -99,6 +103,12 @@
   </head>
 
   <body>
+    <div style="display: none">
+    <!--
+    <img id="map-img" src="http://farm9.staticflickr.com/8531/8577894099_b757549173_b.jpg"/>
+    -->
+    <img id="map-img" src="http://farm3.staticflickr.com/2675/4090651102_877c582129_b.jpg"/>
+    </div>
     <div id="map-div"></div>
   </body>
 </html>
