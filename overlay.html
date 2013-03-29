@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Hello 2d World</title>
+    <title>Map Overlay</title>
     <style>
       html, body, #map-div {
         margin: 0;
@@ -19,12 +19,14 @@
       var canvasLayer;
       var context;
 
-      //var r1 = new google.maps.LatLng(37.73391, -122.49369);
       var r1 = new google.maps.LatLng(37.733914, -122.493861);
       var p1 = { x: 170, y: 653 };
-      //var r2 = new google.maps.LatLng(37.79553, -122.40306);
+
       var r2 = new google.maps.LatLng(37.795532, -122.403315);
       var p2 = { x: 700, y: 198 };
+
+      var r3 = new google.maps.LatLng(37.80643, -122.43750);
+      var p3 = { x: 499, y: 120 };
 
       function init() {
         // initialize the map
@@ -91,8 +93,8 @@
 	var x2 = p2.x;
 	var y2 = p2.y;
 
-	// var x3 = p3.x;
-	// var y3 = p3.y;
+	var x3 = p3.x;
+	var y3 = p3.y;
 
 	var lat1 = r1.lat();
 	var lon1 = r1.lng();
@@ -100,7 +102,8 @@
 	var lat2 = r2.lat();
 	var lon2 = r2.lng();
 
-	// XXX 3
+	var lat3 = r3.lat();
+	var lon3 = r3.lng();
 
 	var img = document.getElementById("map-img");
 	var wid = img.width;
@@ -112,7 +115,7 @@
 
 	y1 = -y1;
 	y2 = -y2;
-	// y3 = -y3;
+	y3 = -y3;
 	ht = -ht;
 
 	// Project earth coordinates to Mercator
@@ -123,33 +126,33 @@
 	var xx2 = lon2 * Math.PI / 180;
 	var yy2 = Math.log(Math.tan(Math.PI/4 + lat2 * Math.PI / 180 / 2));
 
-//	if ($lat3 != 0) {
-//		# If there is a third point, scale the width so the pixel length
-//		# of lines 1 and 2 is proportional to the ground length of the lines.
-//	
-//		$xx3 = $lon3 * $pi / 180;
-//		$yy3 = log(tan($pi/4 + $lat3 * $pi / 180 / 2));
-//	
-//		$d3 = sqrt(($xx2 - $xx1) * ($xx2 - $xx1) + ($yy2 - $yy1) * ($yy2 - $yy1));
-//		$d4 = sqrt(($xx3 - $xx1) * ($xx3 - $xx1) + ($yy3 - $yy1) * ($yy3 - $yy1));
-//	
-//		$dx1 = $x2 - $x1;
-//		$dy1 = $y2 - $y1;
-//	
-//		$dx2 = $x3 - $x1;
-//		$dy2 = $y3 - $y1;
-//	
-//		$scale = sqrt(
-//			(($d3 * $d3) / ($d4 * $d4) * ($dy2 * $dy2) - ($dy1 * $dy1)) /
-//			(($dx1 * $dx1) - (($d3 * $d3) / ($d4 * $d4)) * ($dx2 * $dx2))
-//		);
-//	
-//		# print "$i: scale to $scale\n";
-//	
-//		$x1 = $x1 * $scale;
-//		$x2 = $x2 * $scale;
-//		$wid = $wid * $scale;
-//	}
+	if (lat3 != 0) {
+		// If there is a third point, scale the width so the pixel length
+		// of lines 1 and 2 is proportional to the ground length of the lines.
+	
+		var xx3 = lon3 * Math.PI / 180;
+		var yy3 = Math.log(Math.tan(Math.PI/4 + lat3 * Math.PI / 180 / 2));
+	
+		var d3 = Math.sqrt((xx2 - xx1) * (xx2 - xx1) + (yy2 - yy1) * (yy2 - yy1));
+		var d4 = Math.sqrt((xx3 - xx1) * (xx3 - xx1) + (yy3 - yy1) * (yy3 - yy1));
+	
+		var dx1 = x2 - x1;
+		var dy1 = y2 - y1;
+	
+		var dx2 = x3 - x1;
+		var dy2 = y3 - y1;
+	
+		var scale = Math.sqrt(
+			((d3 * d3) / (d4 * d4) * (dy2 * dy2) - (dy1 * dy1)) /
+			((dx1 * dx1) - ((d3 * d3) / (d4 * d4)) * (dx2 * dx2))
+		);
+	
+		console.log("scale to " + scale);
+	
+		x1 = x1 * scale;
+		x2 = x2 * scale;
+		wid = wid * scale;
+	}
 
 	var pixelang = Math.atan2(y2 - y1, x2 - x1);
 	var globeang = Math.atan2(yy2 - yy1, xx2 - xx1);
