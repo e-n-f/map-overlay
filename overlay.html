@@ -19,13 +19,17 @@
       var canvasLayer;
       var context;
 
-      var rectLatLng = new google.maps.LatLng(37.7080, -122.5287);
-      var rectLatLng2 = new google.maps.LatLng(37.8249, -122.3494);
+      //var r1 = new google.maps.LatLng(37.73391, -122.49369);
+      var r1 = new google.maps.LatLng(37.733914, -122.493861);
+      var p1 = { x: 170, y: 653 };
+      //var r2 = new google.maps.LatLng(37.79553, -122.40306);
+      var r2 = new google.maps.LatLng(37.795532, -122.403315);
+      var p2 = { x: 700, y: 198 };
 
       function init() {
         // initialize the map
         var mapOptions = {
-          zoom: 9,
+          zoom: 12,
           center: new google.maps.LatLng(37.75, -122.45),
           mapTypeId: google.maps.MapTypeId.ROADMAP,
         };
@@ -79,23 +83,153 @@
         var offset = mapProjection.fromLatLngToPoint(canvasLayer.getTopLeft());
         context.translate(-offset.x, -offset.y);
 
-        // project rectLatLng to world coordinates and draw
-        var worldPoint = mapProjection.fromLatLngToPoint(rectLatLng);
-        var worldPoint2 = mapProjection.fromLatLngToPoint(rectLatLng2);
+	// Transformation
+
+	var x1 = p1.x;
+	var y1 = p1.y;
+
+	var x2 = p2.x;
+	var y2 = p2.y;
+
+	// var x3 = p3.x;
+	// var y3 = p3.y;
+
+	var lat1 = r1.lat();
+	var lon1 = r1.lng();
+
+	var lat2 = r2.lat();
+	var lon2 = r2.lng();
+
+	// XXX 3
+
+	var img = document.getElementById("map-img");
+	var wid = img.width;
+	var ht = img.height;
+
+	console.log("size: " + wid + " by " + ht);
+
+	// Invert sign of Y axis on pixel coordinates
+
+	y1 = -y1;
+	y2 = -y2;
+	// y3 = -y3;
+	ht = -ht;
+
+	// Project earth coordinates to Mercator
+
+	var xx1 = lon1 * Math.PI / 180;
+	var yy1 = Math.log(Math.tan(Math.PI/4 + lat1 * Math.PI / 180 / 2));
+
+	var xx2 = lon2 * Math.PI / 180;
+	var yy2 = Math.log(Math.tan(Math.PI/4 + lat2 * Math.PI / 180 / 2));
+
+//	if ($lat3 != 0) {
+//		# If there is a third point, scale the width so the pixel length
+//		# of lines 1 and 2 is proportional to the ground length of the lines.
+//	
+//		$xx3 = $lon3 * $pi / 180;
+//		$yy3 = log(tan($pi/4 + $lat3 * $pi / 180 / 2));
+//	
+//		$d3 = sqrt(($xx2 - $xx1) * ($xx2 - $xx1) + ($yy2 - $yy1) * ($yy2 - $yy1));
+//		$d4 = sqrt(($xx3 - $xx1) * ($xx3 - $xx1) + ($yy3 - $yy1) * ($yy3 - $yy1));
+//	
+//		$dx1 = $x2 - $x1;
+//		$dy1 = $y2 - $y1;
+//	
+//		$dx2 = $x3 - $x1;
+//		$dy2 = $y3 - $y1;
+//	
+//		$scale = sqrt(
+//			(($d3 * $d3) / ($d4 * $d4) * ($dy2 * $dy2) - ($dy1 * $dy1)) /
+//			(($dx1 * $dx1) - (($d3 * $d3) / ($d4 * $d4)) * ($dx2 * $dx2))
+//		);
+//	
+//		# print "$i: scale to $scale\n";
+//	
+//		$x1 = $x1 * $scale;
+//		$x2 = $x2 * $scale;
+//		$wid = $wid * $scale;
+//	}
+
+	var pixelang = Math.atan2(y2 - y1, x2 - x1);
+	var globeang = Math.atan2(yy2 - yy1, xx2 - xx1);
+
+	var rotation = globeang - pixelang;
+	var angle = rotation * 180 / Math.PI;
+	console.log("angle " + angle);
+
+	var scale1 = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+	var scale2 = Math.sqrt((xx2 - xx1) * (xx2 - xx1) + (yy2 - yy1) * (yy2 - yy1));
+
+	var botleftdist = Math.sqrt((0 - x1) * (0 - x1) + (0 - y1) * (0 - y1));
+	var botleftang = Math.atan2(0 - y1, 0 - x1);
+
+	var toprtdist = Math.sqrt((wid - x1) * (wid - x1) + (ht - y1) * (ht - y1));
+	var toprtang = Math.atan2(ht - y1, wid - x1);
+
+	// scale to globe
+
+	botleftdist *= scale2 / scale1;
+	toprtdist *= scale2 / scale1;
+
+	// calculate corresponding position
+
+	var bl_x = xx1 + botleftdist * Math.cos(botleftang + rotation);
+	var bl_y = yy1 + botleftdist * Math.sin(botleftang + rotation);
+
+	var tr_x = xx1 + toprtdist * Math.cos(toprtang + rotation);
+	var tr_y = yy1 + toprtdist * Math.sin(toprtang + rotation);
+
+	var cx = (bl_x + tr_x) / 2;
+	var cy = (bl_y + tr_y) / 2;
+
+	var dist1 = Math.sqrt((bl_x - cx) * (bl_x - cx) + (bl_y - cy) * (bl_y - cy));
+	var dist2 = Math.sqrt((tr_x - cx) * (tr_x - cx) + (tr_y - cy) * (tr_y - cy));
+
+	var ang1 = Math.atan2((bl_y - cy), (bl_x - cx));
+	var ang2 = Math.atan2((tr_y - cy), (tr_x - cx));
+
+	ang1 -= rotation;
+	ang2 -= rotation;
+
+	var xxx1 = cx + dist1 * Math.cos(ang1);
+	var yyy1 = cy + dist1 * Math.sin(ang1);
+
+	var xxx2 = cx + dist2 * Math.cos(ang2);
+	var yyy2 = cy + dist2 * Math.sin(ang2);
+
+	// Convert from projected Mercator back to degrees
+
+	yyy1 = 2 * Math.atan2(Math.exp(yyy1), 1) - Math.PI/2;
+	yyy2 = 2 * Math.atan2(Math.exp(yyy2), 1) - Math.PI/2;
+
+	xxx1 *= 180 / Math.PI;
+	yyy1 *= 180 / Math.PI;
+
+	xxx2 *= 180 / Math.PI;
+	yyy2 *= 180 / Math.PI;
+
+	console.log(yyy1 + "," + xxx1 + " to " + yyy2 + "," + xxx2);
+
+      	var proj1 = new google.maps.LatLng(yyy1, xxx1);
+      	var proj2 = new google.maps.LatLng(yyy2, xxx2);
+
+        // project to world coordinates and draw
+        var worldPoint = mapProjection.fromLatLngToPoint(proj1);
+        var worldPoint2 = mapProjection.fromLatLngToPoint(proj2);
 
 	var width = worldPoint2.x - worldPoint.x;
 	var height = worldPoint2.y - worldPoint.y;
 
 	context.save();
 	context.globalAlpha = .5;
-	context.translate(worldPoint.x, worldPoint.y);
-	// context.rotate(Math.PI / 5);
+	context.translate(worldPoint.x + width/2, worldPoint.y + height/2);
+	//context.translate((worldPoint.x + worldPoint2.x) / 2, (worldPoint.y + worldPoint2.y) / 2);
+	context.rotate(-rotation);
 	context.drawImage(document.getElementById("map-img"),
-        	0, 0,
+        	-width/2, -height/2,
 		worldPoint2.x - worldPoint.x, worldPoint2.y - worldPoint.y);
 	context.restore();
-        //context.fillRect(worldPoint.x, worldPoint.y,
-	//	worldPoint2.x - worldPoint.x, worldPoint2.y - worldPoint.y);
       }
 
       document.addEventListener('DOMContentLoaded', init, false);
