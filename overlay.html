@@ -51,18 +51,18 @@
         canvasLayer = new CanvasLayer(canvasLayerOptions);
         context = canvasLayer.canvas.getContext('2d');
 
-	var downArrow = {
-	  path: 'M -10,20 10,20 0,0 z',
-	  fillColor: "yellow",
+	var topArrow = {
+	  path: 'M -10,-20 10,-20 0,0 z',
+	  fillColor: "red",
 	  fillOpacity: 0.8,
 	  scale: 1,
 	  strokeColor: "black",
 	  strokeWeight: 2,
 	};
 
-	var upArrow = {
-	  path: 'M -10,-20 10,-20 0,0 z',
-	  fillColor: "red",
+	var bottomArrow = {
+	  path: 'M 20,-10 20,10 0,0 z',
+	  fillColor: "yellow",
 	  fillOpacity: 0.8,
 	  scale: 1,
 	  strokeColor: "black",
@@ -73,7 +73,7 @@
 	  position: r1,
 	  map: map,
 	  draggable: true,
-	  icon: upArrow,
+	  icon: topArrow,
 	});
 
 	google.maps.event.addListener(marker1a, 'drag', function(event) {
@@ -86,14 +86,14 @@
 	  position: r1,
 	  map: map,
 	  draggable: true,
-	  icon: downArrow,
+	  icon: bottomArrow,
 	});
 
 	marker2a = new google.maps.Marker({
 	  position: r2,
 	  map: map,
 	  draggable: true,
-	  icon: upArrow,
+	  icon: topArrow,
 	});
 
 	google.maps.event.addListener(marker2a, 'drag', function(event) {
@@ -106,14 +106,14 @@
 	  position: r2,
 	  map: map,
 	  draggable: true,
-	  icon: downArrow,
+	  icon: bottomArrow,
 	});
 
 	marker3a = new google.maps.Marker({
 	  position: r3,
 	  map: map,
 	  draggable: true,
-	  icon: upArrow,
+	  icon: topArrow,
 	});
 
 	google.maps.event.addListener(marker3a, 'drag', function(event) {
@@ -126,7 +126,7 @@
 	  position: r3,
 	  map: map,
 	  draggable: true,
-	  icon: downArrow,
+	  icon: bottomArrow,
 	});
       }
 
