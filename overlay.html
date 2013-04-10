@@ -21,12 +21,15 @@
 
       var r1 = new google.maps.LatLng(37.733914, -122.493861);
       var p1 = { x: 170, y: 653 };
+      var marker1a, marker1b;
 
       var r2 = new google.maps.LatLng(37.795532, -122.403315);
       var p2 = { x: 700, y: 198 };
+      var marker2a, marker2b;
 
       var r3 = new google.maps.LatLng(37.80643, -122.43750);
       var p3 = { x: 499, y: 120 };
+      var marker3a, marker3b;
 
       function init() {
         // initialize the map
@@ -47,6 +50,81 @@
         };
         canvasLayer = new CanvasLayer(canvasLayerOptions);
         context = canvasLayer.canvas.getContext('2d');
+
+	var downArrow = {
+	  path: 'M -10,20 10,20 0,0 z',
+	  fillColor: "yellow",
+	  fillOpacity: 0.8,
+	  scale: 1,
+	  strokeColor: "black",
+	  strokeWeight: 2,
+	};
+
+	var upArrow = {
+	  path: 'M -10,-20 10,-20 0,0 z',
+	  fillColor: "red",
+	  fillOpacity: 0.8,
+	  scale: 1,
+	  strokeColor: "black",
+	  strokeWeight: 2,
+	};
+
+	marker1a = new google.maps.Marker({
+	  position: r1,
+	  map: map,
+	  draggable: true,
+	  icon: upArrow,
+	});
+
+	google.maps.event.addListener(marker1a, 'drag', function(event) {
+	  r1 = event.latLng;
+	  update();
+	});
+
+	marker1b = new google.maps.Marker({
+	  position: r1,
+	  map: map,
+	  draggable: true,
+	  icon: downArrow,
+	});
+
+	marker2a = new google.maps.Marker({
+	  position: r2,
+	  map: map,
+	  draggable: true,
+	  icon: upArrow,
+	});
+
+	google.maps.event.addListener(marker2a, 'drag', function(event) {
+	  r2 = event.latLng;
+	  update();
+	});
+
+	marker2b = new google.maps.Marker({
+	  position: r2,
+	  map: map,
+	  draggable: true,
+	  icon: downArrow,
+	});
+
+	marker3a = new google.maps.Marker({
+	  position: r3,
+	  map: map,
+	  draggable: true,
+	  icon: upArrow,
+	});
+
+	google.maps.event.addListener(marker3a, 'drag', function(event) {
+	  r3 = event.latLng;
+	  update();
+	});
+
+	marker3b = new google.maps.Marker({
+	  position: r3,
+	  map: map,
+	  draggable: true,
+	  icon: downArrow,
+	});
       }
 
       function resize() {
@@ -59,9 +137,6 @@
         var canvasHeight = canvasLayer.canvas.height;
         context.clearRect(0, 0, canvasWidth, canvasHeight);
 
-        // we like our rectangles green
-        context.fillStyle = 'rgba(0, 255, 0, .5)';
-        
         /* We need to scale and translate the map for current view.
          * see https://developers.google.com/maps/documentation/javascript/maptypes#MapCoordinates
          */
@@ -233,28 +308,6 @@
         	-width/2, -height/2,
 		worldPoint2.x - worldPoint.x, worldPoint2.y - worldPoint.y);
 	context.restore();
-
-	var wp1 = mapProjection.fromLatLngToPoint(r1);
-	var wp2 = mapProjection.fromLatLngToPoint(r2);
-	var wp3 = mapProjection.fromLatLngToPoint(r3);
-
-	context.lineWidth = 3 / scale;
-	context.strokeStyle = "#000";
-
-	context.beginPath();
-	context.arc(wp1.x, wp1.y, 10 / scale, 0, Math.PI * 2, false);
-	context.closePath();
-	context.stroke();
-
-	context.beginPath();
-	context.arc(wp2.x, wp2.y, 10 / scale, 0, Math.PI * 2, false);
-	context.closePath();
-	context.stroke();
-
-	context.beginPath();
-	context.arc(wp3.x, wp3.y, 10 / scale, 0, Math.PI * 2, false);
-	context.closePath();
-	context.stroke();
       }
 
       document.addEventListener('DOMContentLoaded', init, false);
