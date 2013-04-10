@@ -78,6 +78,7 @@
 
 	google.maps.event.addListener(marker1a, 'drag', function(event) {
 	  r1 = event.latLng;
+	  marker1b.setPosition(event.latLng);
 	  update();
 	});
 
@@ -97,6 +98,7 @@
 
 	google.maps.event.addListener(marker2a, 'drag', function(event) {
 	  r2 = event.latLng;
+	  marker2b.setPosition(event.latLng);
 	  update();
 	});
 
@@ -116,6 +118,7 @@
 
 	google.maps.event.addListener(marker3a, 'drag', function(event) {
 	  r3 = event.latLng;
+	  marker3b.setPosition(event.latLng);
 	  update();
 	});
 
